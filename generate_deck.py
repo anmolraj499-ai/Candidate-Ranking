@@ -9,27 +9,43 @@ class SlideDeck(FPDF):
         self.set_margin(0)
         self.set_auto_page_break(False)
 
-    def draw_dark_bg(self):
-        self.set_fill_color(15, 23, 42) # Slate-900 (#0F172A)
-        self.rect(0, 0, 297, 210, "F")
-        # Draw the bottom purple/indigo stripe (8mm height)
-        self.set_fill_color(139, 92, 246) # Violet-500 (#8B5CF6)
+    def draw_gradient_rect(self, x_start, y_start, w, h):
+        # Horizontal gradient from Left (red-orange) to Center (purple) to Right (dark blue-indigo)
+        # Matches the official redrob | H2S India.Runs gradient background
+        for x in range(w):
+            pct = x / w
+            if pct < 0.3:
+                # Interpolate from Red-Orange (194, 65, 12) to Purple (109, 40, 217)
+                sub_pct = pct / 0.3
+                r = int(194 + (109 - 194) * sub_pct)
+                g = int(65 + (40 - 65) * sub_pct)
+                b = int(12 + (217 - 12) * sub_pct)
+            else:
+                # Interpolate from Purple (109, 40, 217) to Dark Indigo (30, 27, 75)
+                sub_pct = (pct - 0.3) / 0.7
+                r = int(109 + (30 - 109) * sub_pct)
+                g = int(40 + (27 - 40) * sub_pct)
+                b = int(217 + (75 - 217) * sub_pct)
+            self.set_fill_color(r, g, b)
+            self.rect(x_start + x, y_start, 1.2, h, "F")
+
+    def draw_cover_bg(self):
+        # Slide 1: Top 55% (115mm) is gradient, bottom 45% (95mm) is white
+        self.draw_gradient_rect(0, 0, 297, 115)
+        
+        self.set_fill_color(255, 255, 255)
+        self.rect(0, 115, 297, 95, "F")
+        
+        # Bottom purple/indigo stripe (8mm height)
+        self.set_fill_color(79, 70, 229) # Indigo-600 (#4F46E5)
         self.rect(0, 202, 297, 8, "F")
 
-    def draw_gradient_bg(self):
-        # Transition from a royal dark indigo-blue to a vibrant violet-purple
-        # Dark Blue: (24, 18, 48) to Violet-Purple: (91, 33, 182)
-        steps = 210
-        for y in range(steps):
-            r = int(24 + (91 - 24) * (y / steps))
-            g = int(18 + (33 - 18) * (y / steps))
-            b = int(48 + (182 - 48) * (y / steps))
-            self.set_fill_color(r, g, b)
-            # Use 1.2 height to overlap slightly and prevent gaps due to pixel boundaries
-            self.rect(0, y, 297, 1.2, "F")
-            
-        # Draw the bottom purple/indigo stripe (8mm height)
-        self.set_fill_color(139, 92, 246) # Violet-500 (#8B5CF6)
+    def draw_thank_you_bg(self):
+        # Slide 11: Full-page gradient background
+        self.draw_gradient_rect(0, 0, 297, 210)
+        
+        # Bottom purple/indigo stripe (8mm height)
+        self.set_fill_color(79, 70, 229) # Indigo-600 (#4F46E5)
         self.rect(0, 202, 297, 8, "F")
 
     def draw_light_bg(self):
@@ -114,43 +130,54 @@ def build_pdf(output_path):
     pdf = SlideDeck()
     
     # -------------------------------------------------------------
-    # SLIDE 1: Cover Slide (Dark Theme)
+    # SLIDE 1: Cover Slide (Custom Split Template)
     # -------------------------------------------------------------
     pdf.add_page()
-    pdf.draw_dark_bg()
+    pdf.draw_cover_bg()
     
-    # Top Logo
+    # 1. Top Section Details (Gradient area)
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Helvetica", "B", 14)
+    # Logo
     pdf.set_xy(15, 12)
     pdf.cell(100, 6, "redrob  |  H2S")
     
-    # Large centered hackathon title
+    # Center INDIA.RUNS
     pdf.set_font("Helvetica", "BI", 48)
-    pdf.set_xy(20, 60)
+    pdf.set_xy(20, 40)
     pdf.cell(257, 18, "INDIA.RUNS", align="C")
     
-    # Rounded Button text container
-    pdf.set_fill_color(79, 70, 229) # Indigo
-    pdf.rect(78, 88, 140, 10, "F")
-    pdf.set_text_color(255, 255, 255)
+    # Button: Build what next India runs on
+    pdf.set_draw_color(255, 255, 255)
+    pdf.rect(88, 68, 120, 10, "D")
     pdf.set_font("Helvetica", "B", 12)
-    pdf.set_xy(78, 90)
-    pdf.cell(140, 6, "Team Name & ID: team_2+", align="C")
+    pdf.set_xy(88, 70)
+    pdf.cell(120, 6, "Build what next India runs on", align="C")
     
-    # Subtitle & details
-    pdf.set_text_color(203, 213, 225) # Slate-300
-    pdf.set_font("Helvetica", "B", 14)
-    pdf.set_xy(20, 110)
-    pdf.cell(257, 10, "Offline Candidate Ranking Pipeline", align="C")
+    # 2. Bottom Section Details (White area)
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_xy(20, 130)
     
-    pdf.set_text_color(148, 163, 184) # Slate-400
-    pdf.set_font("Helvetica", "", 10)
-    pdf.set_xy(20, 125)
-    pdf.cell(257, 5, "Designed for the 'Senior AI Engineer - Founding Team' Role", align="C")
+    # Team Name
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(pdf.get_string_width("Team Name : "), 6, "Team Name : ")
+    pdf.set_font("Helvetica", "", 12)
+    pdf.cell(100, 6, "team_2+")
     
-    pdf.set_xy(20, 160)
-    pdf.cell(257, 5, "Submitted by: Anmol Raj  |  anmolraj499@gmail.com  |  +91-6204223789", align="C")
+    # Team Leader Name
+    pdf.set_xy(20, 142)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(pdf.get_string_width("Team Leader Name : "), 6, "Team Leader Name : ")
+    pdf.set_font("Helvetica", "", 12)
+    pdf.cell(100, 6, "Anmol Raj")
+    
+    # Problem Statement
+    pdf.set_xy(20, 154)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(pdf.get_string_width("Problem Statement : "), 6, "Problem Statement : ")
+    pdf.set_font("Helvetica", "", 12)
+    pdf.cell(150, 6, "Senior AI Engineer - Founding Team Candidate Ranking")
+    
     pdf.draw_slide_footer(1)
 
     # -------------------------------------------------------------
@@ -321,7 +348,7 @@ def build_pdf(output_path):
     pdf.draw_card(154, 45, 128, 140, "SHORTLIST COHERENCE & TRUST")
     pdf.bullet_point(157, 60, "Programs generate transparent, non-generic descriptions (e.g. 'Software engineer with 6.9 years experience matching PyTorch, Milvus').", "1. Explanations Transparency:", 120)
     pdf.bullet_point(157, 95, "Zero hallucinated text or fabricated skills. Every claim is strictly backed by the candidate's career details.", "2. Factual Compliance:", 120)
-    pdf.bullet_point(157, 130, "Verified to contain 0% honeypots or timeline fraud candidates in the final recommandé Top 100.", "3. Honeypot Screening Proof:", 120)
+    pdf.bullet_point(157, 130, "Verified to contain 0% honeypots or timeline fraud candidates in the final recommended Top 100.", "3. Honeypot Screening Proof:", 120)
 
     # -------------------------------------------------------------
     # SLIDE 10: Submission Assets (Light Theme matching Slide 5)
@@ -347,10 +374,10 @@ def build_pdf(output_path):
     pdf.bullet_point(202, 124, "Official metadata detailing compute environment, team contact details, and algorithms used.", "Submission Metadata YAML:", 74)
 
     # -------------------------------------------------------------
-    # SLIDE 11: Thank You / Cover Slide (Dark Theme)
+    # SLIDE 11: Thank You Slide (Custom Gradient Theme)
     # -------------------------------------------------------------
     pdf.add_page()
-    pdf.draw_dark_bg()
+    pdf.draw_thank_you_bg()
     
     # Logo
     pdf.set_text_color(255, 255, 255)
@@ -360,15 +387,14 @@ def build_pdf(output_path):
     
     # Center INDIA.RUNS
     pdf.set_font("Helvetica", "BI", 48)
-    pdf.set_xy(20, 60)
+    pdf.set_xy(20, 40)
     pdf.cell(257, 18, "INDIA.RUNS", align="C")
     
-    # Button-style text
-    pdf.set_fill_color(79, 70, 229) # Indigo
-    pdf.rect(88, 88, 120, 10, "F")
-    pdf.set_text_color(255, 255, 255)
+    # Button: Build what next India runs on
+    pdf.set_draw_color(255, 255, 255)
+    pdf.rect(88, 68, 120, 10, "D")
     pdf.set_font("Helvetica", "B", 12)
-    pdf.set_xy(88, 90)
+    pdf.set_xy(88, 70)
     pdf.cell(120, 6, "Build what next India runs on", align="C")
     
     # Thank You text

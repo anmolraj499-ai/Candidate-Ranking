@@ -1,7 +1,8 @@
 import os
 from sentence_transformers import SentenceTransformer, CrossEncoder
 
-models_dir = "c:/Users/anmol/OneDrive/Pictures/candidate ranking1/redrob_hackathon/models"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+models_dir = os.path.join(BASE_DIR, "models")
 os.makedirs(models_dir, exist_ok=True)
 
 bi_encoder_path = os.path.join(models_dir, "all-MiniLM-L6-v2")

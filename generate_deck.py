@@ -25,13 +25,13 @@ class SlideDeck(FPDF):
         self.set_text_color(13, 148, 136) # Teal-600
         self.set_font("Helvetica", "B", 10)
         self.set_xy(15, 12)
-        self.cell(0, 5, category.upper(), ln=True)
+        self.cell(0, 5, category.upper())
         
         # Title
         self.set_text_color(15, 23, 42) # Slate-900
         self.set_font("Helvetica", "B", 22)
         self.set_xy(15, 17)
-        self.cell(0, 10, title, ln=True)
+        self.cell(0, 10, title)
         
         # Horizontal Divider Line
         self.set_draw_color(226, 232, 240) # Slate-200
@@ -54,28 +54,39 @@ class SlideDeck(FPDF):
             self.set_text_color(15, 23, 42)
             self.set_font("Helvetica", "B", 11)
             self.set_xy(x + 5, y + 4)
-            self.cell(w - 10, 6, title, ln=True)
+            self.cell(w - 10, 6, title)
             self.set_draw_color(241, 245, 249) # Slate-100
             self.line(x, y + 11, x + w, y + 11)
 
-    def bullet_point(self, x, y, text, title=None, text_w=120):
+    def bullet_point(self, x, y, text, title=None, text_w=110):
         # Draw small teal bullet
         self.set_fill_color(13, 148, 136)
         self.rect(x, y + 1.5, 2, 2, "F")
         
-        # Draw text
-        self.set_xy(x + 5, y)
+        # Save margins
+        old_l_margin = self.l_margin
+        old_r_margin = self.r_margin
+        
+        # Set margins for the bullet content area to enforce clean wrapping
+        self.set_left_margin(x + 5)
+        self.set_right_margin(297 - (x + 5 + text_w))
+        
+        current_y = y
         if title:
-            self.set_text_color(15, 23, 42)
+            self.set_text_color(15, 23, 42) # Slate-900
             self.set_font("Helvetica", "B", 10)
-            self.cell(self.get_string_width(title) + 2, 5, title, ln=False)
-            self.set_text_color(71, 85, 105) # Slate-600
-            self.set_font("Helvetica", "", 10)
-            self.multi_cell(text_w, 5, text)
-        else:
-            self.set_text_color(71, 85, 105) # Slate-600
-            self.set_font("Helvetica", "", 10)
-            self.multi_cell(text_w + 10, 5, text)
+            self.set_xy(x + 5, current_y)
+            self.multi_cell(text_w, 4.5, title)
+            current_y = self.get_y() + 1
+            
+        self.set_text_color(71, 85, 105) # Slate-600
+        self.set_font("Helvetica", "", 9.5)
+        self.set_xy(x + 5, current_y)
+        self.multi_cell(text_w, 4.5, text)
+        
+        # Restore original margins
+        self.set_left_margin(old_l_margin)
+        self.set_right_margin(old_r_margin)
 
 def build_pdf(output_path):
     pdf = SlideDeck()
@@ -90,19 +101,19 @@ def build_pdf(output_path):
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Helvetica", "B", 32)
     pdf.set_xy(20, 65)
-    pdf.cell(0, 12, "Advanced Candidate Ranking Engine", ln=True)
+    pdf.cell(0, 12, "Advanced Candidate Ranking Engine")
     
     # Subtitle
     pdf.set_text_color(13, 148, 136) # Teal-600
     pdf.set_font("Helvetica", "B", 16)
     pdf.set_xy(20, 80)
-    pdf.cell(0, 10, "A Production-Grade Hybrid Retrieval & Re-ranking Pipeline", ln=True)
+    pdf.cell(0, 10, "A Production-Grade Hybrid Retrieval & Re-ranking Pipeline")
     
     # Metadata Line
     pdf.set_text_color(148, 163, 184) # Slate-400
     pdf.set_font("Helvetica", "", 11)
     pdf.set_xy(20, 93)
-    pdf.cell(0, 6, "Designed for the 'Senior AI Engineer - Founding Team' Role | 100k Candidates Pool", ln=True)
+    pdf.cell(0, 6, "Designed for the 'Senior AI Engineer - Founding Team' Role | 100k Candidates Pool")
     
     # Divider line
     pdf.set_draw_color(30, 41, 59) # Slate-800
@@ -112,24 +123,24 @@ def build_pdf(output_path):
     pdf.set_text_color(203, 213, 225) # Slate-300
     pdf.set_font("Helvetica", "B", 11)
     pdf.set_xy(20, 125)
-    pdf.cell(100, 6, "SUBMITTED BY:", ln=True)
+    pdf.cell(100, 6, "SUBMITTED BY:")
     pdf.set_font("Helvetica", "", 11)
     pdf.set_xy(20, 131)
-    pdf.cell(100, 5, "Team Name: team_2+", ln=True)
+    pdf.cell(100, 5, "Team Name: team_2+")
     pdf.set_xy(20, 137)
-    pdf.cell(100, 5, "Primary Contact: Anmol Raj (anmolraj499@gmail.com)", ln=True)
+    pdf.cell(100, 5, "Primary Contact: Anmol Raj (anmolraj499@gmail.com)")
     
     # Right panel details (Specs summary)
     pdf.set_xy(180, 125)
     pdf.set_font("Helvetica", "B", 11)
-    pdf.cell(100, 6, "SYSTEM COMPLIANCE:", ln=True)
+    pdf.cell(100, 6, "SYSTEM COMPLIANCE:")
     pdf.set_font("Helvetica", "", 11)
     pdf.set_xy(180, 131)
-    pdf.cell(100, 5, "[X] 100% Offline (Zero API Calls at Runtime)", ln=True)
+    pdf.cell(100, 5, "[X] 100% Offline (Zero API Calls at Runtime)")
     pdf.set_xy(180, 137)
-    pdf.cell(100, 5, "[X] CPU-Only execution (<= 16GB RAM constraint)", ln=True)
+    pdf.cell(100, 5, "[X] CPU-Only execution (<= 16GB RAM constraint)")
     pdf.set_xy(180, 143)
-    pdf.cell(100, 5, "[X] Execution time: 193.75s (under 5-minute limit)", ln=True)
+    pdf.cell(100, 5, "[X] Execution time: 193.75s (under 5-minute limit)")
     
     # -------------------------------------------------------------
     # SLIDE 2: Problem & Strategy (Light Theme)
@@ -142,18 +153,18 @@ def build_pdf(output_path):
     # Column 1: The ATS Problem
     pdf.draw_card(15, 38, 128, 148, "THE CRITICAL FLAWS OF KEYWORD FILTERS")
     
-    pdf.bullet_point(20, 55, "Candidates with weak skills stuff their resumes with target keywords, pushing low-quality profiles to the top.", "1. Vulnerability to Keyword Stuffing: ")
-    pdf.bullet_point(20, 75, "Fails to recognize conceptual synonyms. A candidate writing 'neural representation learning' is filtered out if the system only looks for 'embeddings'.", "2. Semantic Blindness: ")
-    pdf.bullet_point(20, 95, "Treats skills list in isolation, failing to evaluate career trajectories, tenure stability, and notice period constraints.", "3. Ignoring Career Context: ")
-    pdf.bullet_point(20, 115, "Standard databases are flooded with fake timelines, invalid experience declarations, and resume fraud (honeypot profiles).", "4. Honeypot Ingestion: ")
+    pdf.bullet_point(20, 50, "Candidates with weak skills stuff their resumes with target keywords, pushing low-quality profiles to the top.", "1. Vulnerability to Keyword Stuffing:", 113)
+    pdf.bullet_point(20, 80, "Fails to recognize conceptual synonyms. A candidate writing 'neural representation learning' is filtered out if the system only looks for 'embeddings'.", "2. Semantic Blindness:", 113)
+    pdf.bullet_point(20, 110, "Treats skills list in isolation, failing to evaluate career trajectories, tenure stability, and notice period constraints.", "3. Ignoring Career Context:", 113)
+    pdf.bullet_point(20, 140, "Standard databases are flooded with fake timelines, invalid experience declarations, and resume fraud (honeypot profiles).", "4. Honeypot Ingestion:", 113)
     
     # Column 2: Our Recruiter-First Philosophy
     pdf.draw_card(154, 38, 128, 148, "THE TEAM_2+ PHILOSOPHY")
     
-    pdf.bullet_point(159, 55, "Combine fast keyword index funnels with deep contextual sentence-transformers to capture implicit expertise.", "1. Hybrid Search Architecture: ")
-    pdf.bullet_point(159, 75, "Verify candidate consistency by cross-referencing graduation years, skill durations, and job title coherence before scoring.", "2. Hard Data Integrity Gates: ")
-    pdf.bullet_point(159, 95, "Fuses Redrob signals (notice periods, recruiter responsiveness, and geographic flexibility) directly into the mathematical rank.", "3. Behavioral Signal Fusion: ")
-    pdf.bullet_point(159, 115, "Generate honest, non-hallucinated explanations summarizing why a candidate is ranked, directly highlighting experience metrics.", "4. Factual Explainability: ")
+    pdf.bullet_point(159, 50, "Combine fast keyword index funnels with deep contextual sentence-transformers to capture implicit expertise.", "1. Hybrid Search Architecture:", 113)
+    pdf.bullet_point(159, 80, "Verify candidate consistency by cross-referencing graduation years, skill durations, and job title coherence before scoring.", "2. Hard Data Integrity Gates:", 113)
+    pdf.bullet_point(159, 110, "Fuses Redrob signals (notice periods, recruiter responsiveness, and geographic flexibility) directly into the mathematical rank.", "3. Behavioral Signal Fusion:", 113)
+    pdf.bullet_point(159, 140, "Generate honest, non-hallucinated explanations summarizing why a candidate is ranked, directly highlighting experience metrics.", "4. Factual Explainability:", 113)
 
     # -------------------------------------------------------------
     # SLIDE 3: System Architecture (Light Theme)
@@ -166,7 +177,6 @@ def build_pdf(output_path):
     # Architecture Card
     pdf.draw_card(15, 38, 267, 148, "PIPELINE WORKFLOW & COMPUTATION STAGES")
     
-    # Box layout for the workflow stages
     stages = [
         {"num": "1", "name": "Stream Ingestion", "desc": "Ingests 100k records line-by-line to prevent memory leaks. Screens timeline/skills fraud."},
         {"num": "2", "name": "BM25 Lexical Funnel", "desc": "Computes fast keyword score over target stack (PyTorch, RAG). Narrows pool to top 2,000."},
@@ -190,13 +200,16 @@ def build_pdf(output_path):
         pdf.set_text_color(13, 148, 136) # Teal
         pdf.set_font("Helvetica", "B", 11)
         pdf.set_xy(32, y_start + 1.5)
-        pdf.cell(100, 5, s["name"], ln=True)
+        pdf.cell(100, 5, s["name"])
         
-        # Stage description
+        # Stage description with left margin constraint
+        old_l = pdf.l_margin
+        pdf.set_left_margin(90)
         pdf.set_text_color(71, 85, 105) # Slate
         pdf.set_font("Helvetica", "", 10)
         pdf.set_xy(90, y_start + 1.5)
         pdf.multi_cell(180, 5, s["desc"])
+        pdf.set_left_margin(old_l)
         
         # Divider line between steps
         if i < 5:
@@ -216,44 +229,46 @@ def build_pdf(output_path):
     # Left Box: Filtering Rules
     pdf.draw_card(15, 38, 140, 148, "HONEYPOT DETECTION ALGORITHMS")
     
-    pdf.bullet_point(20, 55, "Excludes profiles claiming total years of experience exceeding the span since graduation by more than 2 years: \nExp > (2026 - First Graduation Year) + 2", "Rule 1: Graduation/Experience Mismatch", 110)
-    pdf.bullet_point(20, 85, "Excludes candidates claiming 'expert' or 'advanced' proficiency in 4 or more distinct skills but declaring exactly 0 months of duration.", "Rule 2: Skill Duration Inflation", 110)
-    pdf.bullet_point(20, 110, "Cross-references job start and end dates with declared job durations, checking for temporal mismatches (>12 months discrepancy).", "Rule 3: Career Timeline Coherence", 110)
-    pdf.bullet_point(20, 135, "Detects copy-paste profile descriptions (e.g. 'marketing manager' summaries paired with unrelated developer or mechanical engineering titles).", "Rule 4: Semantic Drift Integrity Gate", 110)
+    pdf.bullet_point(20, 50, "Excludes profiles claiming total years of experience exceeding the span since graduation by more than 2 years: \nExp > (2026 - First Graduation Year) + 2", "Rule 1: Graduation/Experience Mismatch", 125)
+    pdf.bullet_point(20, 80, "Excludes candidates claiming 'expert' or 'advanced' proficiency in 4 or more distinct skills but declaring exactly 0 months of duration.", "Rule 2: Skill Duration Inflation", 125)
+    pdf.bullet_point(20, 110, "Cross-references job start and end dates with declared job durations, checking for temporal mismatches (>12 months discrepancy).", "Rule 3: Career Timeline Coherence", 125)
+    pdf.bullet_point(20, 140, "Detects copy-paste profile descriptions (e.g. 'marketing manager' summaries paired with unrelated developer or mechanical engineering titles).", "Rule 4: Semantic Drift Integrity Gate", 125)
     
     # Right Box: Results
     pdf.draw_card(164, 38, 118, 148, "FILTERING IMPACT")
     
     pdf.set_text_color(13, 148, 136) # Teal
-    pdf.set_font("Helvetica", "B", 48)
-    pdf.set_xy(169, 55)
-    pdf.cell(108, 15, "35,208", align="C", ln=True)
+    pdf.set_font("Helvetica", "B", 42)
+    pdf.set_xy(169, 52)
+    pdf.cell(108, 12, "35,208", align="C")
     
     pdf.set_text_color(15, 23, 42)
-    pdf.set_font("Helvetica", "B", 12)
-    pdf.set_xy(169, 73)
-    pdf.cell(108, 6, "Honeypot Candidates Screened Out", align="C", ln=True)
+    pdf.set_font("Helvetica", "B", 11)
+    pdf.set_xy(169, 66)
+    pdf.cell(108, 5, "Honeypot Candidates Screened Out", align="C")
     
+    # Multi-cell with left margin constraint
+    old_l = pdf.l_margin
+    pdf.set_left_margin(172)
     pdf.set_text_color(71, 85, 105)
-    pdf.set_font("Helvetica", "", 10)
-    pdf.set_xy(174, 85)
-    pdf.multi_cell(98, 5, "From the original 100,000 profile pool, 35,208 candidates were flagged as having inconsistent timeline claims or fraudulent skills sheets.")
+    pdf.set_font("Helvetica", "", 9.5)
+    pdf.set_xy(172, 75)
+    pdf.multi_cell(102, 4.2, "From the original 100,000 profile pool, 35,208 candidates were flagged as having inconsistent timeline claims or fraudulent skills sheets.")
     
     # Large Stat 2: Honeypot presence in Top 100
     pdf.set_text_color(15, 23, 42)
-    pdf.set_font("Helvetica", "B", 48)
-    pdf.set_xy(169, 115)
-    pdf.cell(108, 15, "0%", align="C", ln=True)
+    pdf.set_font("Helvetica", "B", 42)
+    pdf.set_xy(169, 112)
+    pdf.cell(108, 12, "0%", align="C")
     
     pdf.set_text_color(13, 148, 136)
-    pdf.set_font("Helvetica", "B", 12)
-    pdf.set_xy(169, 133)
-    pdf.cell(108, 6, "Honeypots in Final Shortlist", align="C", ln=True)
+    pdf.set_font("Helvetica", "B", 11)
+    pdf.set_xy(169, 126)
+    pdf.cell(108, 5, "Honeypots in Final Shortlist", align="C")
     
-    pdf.set_text_color(71, 85, 105)
-    pdf.set_font("Helvetica", "", 10)
-    pdf.set_xy(174, 143)
-    pdf.multi_cell(98, 5, "Our strict programmatic logic guarantees that none of these anomalous profiles make it into the final recommended Top 100 shortlist.")
+    pdf.set_xy(172, 135)
+    pdf.multi_cell(102, 4.2, "Our strict programmatic logic guarantees that none of these anomalous profiles make it into the final recommended Top 100 shortlist.")
+    pdf.set_left_margin(old_l)
 
     # -------------------------------------------------------------
     # SLIDE 5: Retrieval & Dense Embeddings (Light Theme)
@@ -266,18 +281,18 @@ def build_pdf(output_path):
     # Left Box: Stage 1 Lexical
     pdf.draw_card(15, 38, 128, 148, "STAGE 1: BM25 LEXICAL RETRIEVAL")
     
-    pdf.bullet_point(20, 55, "Computes a document index over normalized terms in candidate summaries, titles, and career descriptions.", "Mechanism:")
-    pdf.bullet_point(20, 75, "Curated keyword list containing 'pytorch', 'vector database', 'faiss', 'qdrant', 'RAG', 'transformers', and 'mlops'.", "Query Vector:")
-    pdf.bullet_point(20, 98, "Filters candidate pool from 64,792 active profiles down to the top 2,000 in just 10.01 seconds.", "Speed & Scale:")
-    pdf.bullet_point(20, 118, "Acts as a broad recall filter to ensure high-coverage of primary technical stack requirements.", "Role:")
+    pdf.bullet_point(20, 50, "Computes a document index over normalized terms in candidate summaries, titles, and career descriptions.", "Mechanism:", 113)
+    pdf.bullet_point(20, 80, "Curated keyword list containing 'pytorch', 'vector database', 'faiss', 'qdrant', 'RAG', 'transformers', and 'mlops'.", "Query Vector:", 113)
+    pdf.bullet_point(20, 110, "Filters candidate pool from 64,792 active profiles down to the top 2,000 in just 10.01 seconds.", "Speed & Scale:", 113)
+    pdf.bullet_point(20, 140, "Acts as a broad recall filter to ensure high-coverage of primary technical stack requirements.", "Role:", 113)
 
     # Right Box: Stage 2 Dense
     pdf.draw_card(154, 38, 128, 148, "STAGE 2: LOCAL SBERT EMBEDDINGS")
     
-    pdf.bullet_point(159, 55, "Uses local 'all-MiniLM-L6-v2' model to map candidate profiles into a 384-dimensional vector space.", "Model selection:")
-    pdf.bullet_point(159, 75, "Loads model files locally from checkpoints inside the project. Requires zero network/API requests.", "Zero-Network Constraint:")
-    pdf.bullet_point(159, 98, "Computes exact cosine similarity on CPU across the top 2,000 candidates in 15 seconds.", "Computation:")
-    pdf.bullet_point(159, 118, "Identifies matching candidates based on semantic meaning rather than exact word matches, preventing keyword stuffing.", "Impact:")
+    pdf.bullet_point(159, 50, "Uses local 'all-MiniLM-L6-v2' model to map candidate profiles into a 384-dimensional vector space.", "Model selection:", 113)
+    pdf.bullet_point(159, 80, "Loads model files locally from checkpoints inside the project. Requires zero network/API requests.", "Zero-Network Constraint:", 113)
+    pdf.bullet_point(159, 110, "Computes exact cosine similarity on CPU across the top 2,000 candidates in 15 seconds.", "Computation:", 113)
+    pdf.bullet_point(159, 140, "Identifies matching candidates based on semantic meaning rather than exact word matches, preventing keyword stuffing.", "Impact:", 113)
 
     # -------------------------------------------------------------
     # SLIDE 6: Behavioral Modulation & Reranking (Light Theme)
@@ -290,18 +305,18 @@ def build_pdf(output_path):
     # Left Box: Platform Signal Modulation
     pdf.draw_card(15, 38, 128, 148, "STAGE 3: BEHAVIORAL SIGNAL MODULATION")
     
-    pdf.bullet_point(20, 52, "Underqualified candidates receive steep penalty curves; overqualified profiles decay slowly to prevent screening out.", "1. Seniority Fit Curve:")
-    pdf.bullet_point(20, 78, "Bonus (+5%) for sub-15 days notice, penalty (-15%) for 90-day locks to account for drop-off hazard.", "2. Notice Period Agility:")
-    pdf.bullet_point(20, 105, "1.0 for target Indian hubs (Noida, Pune, NCR). 0.95 for relocation-willing. Penalty for non-willing remote candidates.", "3. Location Fit Multipliers:")
-    pdf.bullet_point(20, 132, "Integrates recruiter response rates and profile completeness directly into the scoring loop.", "4. Platform Completeness:")
+    pdf.bullet_point(20, 50, "Underqualified candidates receive steep penalty curves; overqualified profiles decay slowly to prevent screening out.", "1. Seniority Fit Curve:", 113)
+    pdf.bullet_point(20, 80, "Bonus (+5%) for sub-15 days notice, penalty (-15%) for 90-day locks to account for drop-off hazard.", "2. Notice Period Agility:", 113)
+    pdf.bullet_point(20, 110, "1.0 for target Indian hubs (Noida, Pune, NCR). 0.95 for relocation-willing. Penalty for non-willing remote candidates.", "3. Location Fit Multipliers:", 113)
+    pdf.bullet_point(20, 140, "Integrates recruiter response rates and profile completeness directly into the scoring loop.", "4. Platform Completeness:", 113)
 
     # Right Box: Cross-Encoder Reranking
     pdf.draw_card(154, 38, 128, 148, "STAGE 4: LOCAL CROSS-ENCODER RERANK")
     
-    pdf.bullet_point(159, 52, "Uses 'ms-marco-MiniLM-L-6-v2' locally on the top 200 candidates to refine the final shortlist.", "Dual-Encoder Correction:")
-    pdf.bullet_point(159, 78, "Computes joint cross-attention across candidate summaries and JD requirements simultaneously, extracting complex matching patterns.", "Mechanism:")
-    pdf.bullet_point(159, 105, "Uses alphabetical candidate ID sort as a tie-breaker when final scores are identical, ensuring stable and deterministic ranks.", "Deterministic Tie-Breaking:")
-    pdf.bullet_point(159, 132, "Explains the specific title, years of experience, top matching tools, and notice period constraints without hallucinated claims.", "Factual Rationale Generator:")
+    pdf.bullet_point(159, 50, "Uses 'ms-marco-MiniLM-L-6-v2' locally on the top 200 candidates to refine the final shortlist.", "Dual-Encoder Correction:", 113)
+    pdf.bullet_point(159, 80, "Computes joint cross-attention across candidate summaries and JD requirements simultaneously, extracting complex matching patterns.", "Mechanism:", 113)
+    pdf.bullet_point(159, 110, "Uses alphabetical candidate ID sort as a tie-breaker when final scores are identical, ensuring stable and deterministic ranks.", "Deterministic Tie-Breaking:", 113)
+    pdf.bullet_point(159, 140, "Explains the specific title, years of experience, top matching tools, and notice period constraints without hallucinated claims.", "Factual Rationale Generator:", 113)
 
     # -------------------------------------------------------------
     # SLIDE 7: Summary & Verification (Dark Theme)
@@ -313,7 +328,7 @@ def build_pdf(output_path):
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Helvetica", "B", 24)
     pdf.set_xy(20, 20)
-    pdf.cell(0, 10, "Project Delivery & Verification Summary", ln=True)
+    pdf.cell(0, 10, "Project Delivery & Verification Summary")
     
     pdf.set_draw_color(30, 41, 59)
     pdf.line(20, 32, 277, 32)
@@ -322,24 +337,25 @@ def build_pdf(output_path):
     pdf.set_text_color(13, 148, 136) # Teal
     pdf.set_font("Helvetica", "B", 12)
     pdf.set_xy(20, 42)
-    pdf.cell(100, 6, "SUBMISSION BENCHMARKS", ln=True)
+    pdf.cell(100, 6, "SUBMISSION BENCHMARKS")
     
+    old_l = pdf.l_margin
+    pdf.set_left_margin(20)
     pdf.set_text_color(241, 245, 249) # Light text
     pdf.set_font("Helvetica", "", 10)
     pdf.set_xy(20, 52)
-    pdf.multi_cell(115, 5, 
+    pdf.multi_cell(125, 5.5, 
         "- Execution Time: 193.75 seconds to screen, rank, and format 100,000 candidates on a single core.\n\n"
         "- Memory Footprint: Peak RAM is well under 16GB due to line-by-line streaming of candidates.\n\n"
         "- Formatting Verification: Passed all validate_submission.py checks, guaranteeing monotonic non-increasing scores, strict ranks (1-100), and alphabetical tie-breaking.\n\n"
         "- Zero API Dependency: Operates completely offline, protecting candidate privacy and securing sandbox replicability."
     )
+    pdf.set_left_margin(old_l)
     
     # Right section: Deliverables checklist
     pdf.set_xy(160, 42)
     pdf.set_font("Helvetica", "B", 12)
-    pdf.cell(100, 6, "DELIVERABLES CHECKLIST", ln=True)
-    
-    pdf.set_font("Helvetica", "", 10)
+    pdf.cell(100, 6, "DELIVERABLES CHECKLIST")
     
     checklist = [
         "[X] GitHub Repository (clean history, fully documented README)",

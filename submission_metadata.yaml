@@ -1,0 +1,54 @@
+# Redrob Hackathon — Submission Metadata
+team_name: "team_2+"
+
+primary_contact:
+  name: "Anmol"
+  email: "anmol@example.com"
+  phone: "+91-9999999999"
+
+team_members:
+  - name: "Anmol"
+    email: "anmol@example.com"
+    role: "ML Engineer"
+
+github_repo: "https://github.com/anmol/redrob-candidate-ranking"
+sandbox_link: "https://huggingface.co/spaces/anmol/redrob-ranker"
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./team_2+.csv"
+
+compute:
+  platform: "Local Windows Machine"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.11.4"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+ai_tools_used:
+  - "Gemini"
+  - "Claude"
+  - "Cursor"
+
+ai_usage_summary: |
+  Used Gemini for system architecture design and pipeline development.
+  Used Claude for code review, tie-breaker sorting validation, and refactoring.
+  No candidate data was sent to hosted APIs during the ranking execution step.
+
+methodology_summary: |
+  A hybrid dense-sparse candidate ranking pipeline.
+  Stream-reads candidates to detect and filter out honeypot anomalies.
+  Uses a fast BM25 index over JD keywords to funnel 100k profiles to 2,000 in ~12 seconds.
+  Runs local SentenceTransformer (all-MiniLM-L6-v2) semantic scoring on the 2,000,
+  modulated by Redrob behavioral signals (notice period, response rates, location).
+  Applies a local Cross-Encoder (ms-marco-MiniLM-L-6-v2) to re-rank the top 200,
+  producing the final top 100 with dynamic, fact-based reasoning.
+  Runs end-to-end on CPU in 111 seconds.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true

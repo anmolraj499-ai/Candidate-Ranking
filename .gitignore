@@ -1,0 +1,14 @@
+# Candidate dataset (exceeds 100MB GitHub limit)
+candidates.jsonl
+sandbox_shortlist.csv
+
+# Python environment caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db

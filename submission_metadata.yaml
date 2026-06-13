@@ -2,13 +2,13 @@
 team_name: "team_2+"
 
 primary_contact:
-  name: "Anmol"
-  email: "anmol@example.com"
-  phone: "+91-9999999999"
+  name: "Anmol Raj"
+  email: "anmolraj499@gmail.com"
+  phone: "+91-6204223789"
 
 team_members:
-  - name: "Anmol"
-    email: "anmol@example.com"
+  - name: "Anmol Raj"
+    email: "anmolraj499@gmail.com"
     role: "ML Engineer"
 
 github_repo: "https://github.com/anmol/redrob-candidate-ranking"

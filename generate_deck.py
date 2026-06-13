@@ -10,81 +10,93 @@ class SlideDeck(FPDF):
         self.set_auto_page_break(False)
 
     def draw_dark_bg(self):
-        self.set_fill_color(15, 23, 42) # Slate-900 (#0F172A)
+        # Rich deep indigo gradient simulation (solid dark purple-indigo)
+        self.set_fill_color(30, 27, 75) # Deep Indigo-950 (#1E1B4B)
         self.rect(0, 0, 297, 210, "F")
+        
+        # Subtle horizontal purple highlight at the bottom
+        self.set_fill_color(79, 70, 229) # Indigo-600 (#4F46E5)
+        self.rect(0, 202, 297, 8, "F")
 
     def draw_light_bg(self):
-        self.set_fill_color(248, 250, 252) # Slate-50 (#F8FAFC)
+        self.set_fill_color(255, 255, 255) # Clean White background
         self.rect(0, 0, 297, 210, "F")
-        # Color bar at the very top
-        self.set_fill_color(13, 148, 136) # Teal-600 (#0D9488)
-        self.rect(0, 0, 297, 6, "F")
-
-    def draw_slide_header(self, category, title):
-        # Category label
-        self.set_text_color(13, 148, 136) # Teal-600
-        self.set_font("Helvetica", "B", 10)
-        self.set_xy(15, 12)
-        self.cell(0, 5, category.upper())
         
-        # Title
+        # Black header bar (Top 20mm)
+        self.set_fill_color(0, 0, 0)
+        self.rect(0, 0, 297, 20, "F")
+        
+        # Purple color bar at the very bottom (Bottom 8mm)
+        self.set_fill_color(79, 70, 229) # Indigo-600 (#4F46E5)
+        self.rect(0, 202, 297, 8, "F")
+
+    def draw_slide_header(self, title):
+        # Header Left Logo: redrob | H2S
+        self.set_text_color(255, 255, 255)
+        self.set_font("Helvetica", "B", 13)
+        self.set_xy(15, 7)
+        self.cell(50, 6, "redrob  |  H2S")
+        
+        # Header Right Logo: INDIA.RUNS
+        self.set_font("Helvetica", "BI", 15)
+        self.set_xy(232, 7)
+        self.cell(50, 6, "INDIA.RUNS", align="R")
+        
+        # Slide Title (Left-aligned in content area)
         self.set_text_color(15, 23, 42) # Slate-900
         self.set_font("Helvetica", "B", 22)
-        self.set_xy(15, 17)
+        self.set_xy(15, 30)
         self.cell(0, 10, title)
-        
-        # Horizontal Divider Line
-        self.set_draw_color(226, 232, 240) # Slate-200
-        self.line(15, 28, 282, 28)
 
     def draw_slide_footer(self, page_num):
+        # Slide page number helper
         self.set_text_color(148, 163, 184) # Slate-400
         self.set_font("Helvetica", "", 8)
-        self.set_xy(15, 198)
-        self.cell(100, 5, "Redrob Runs Data & AI Challenge  |  team_2+")
-        self.set_xy(182, 198)
-        self.cell(100, 5, f"Slide {page_num} of 7", align="R")
+        self.set_xy(15, 195)
+        self.cell(100, 5, "team_2+  |  Candidate Ranking Submission")
+        self.set_xy(182, 195)
+        self.cell(100, 5, f"Slide {page_num} of 6", align="R")
 
-    def draw_card(self, x, y, w, h, title=None, bg_color=(255, 255, 255), border_color=(226, 232, 240)):
+    def draw_card(self, x, y, w, h, title=None, bg_color=(250, 250, 250), border_color=(226, 232, 240)):
         self.set_fill_color(*bg_color)
         self.set_draw_color(*border_color)
         self.rect(x, y, w, h, "FD")
         
         if title:
             self.set_text_color(15, 23, 42)
-            self.set_font("Helvetica", "B", 11)
+            self.set_font("Helvetica", "B", 10.5)
             self.set_xy(x + 5, y + 4)
             self.cell(w - 10, 6, title)
-            self.set_draw_color(241, 245, 249) # Slate-100
+            self.set_draw_color(226, 232, 240) # Slate-200
             self.line(x, y + 11, x + w, y + 11)
 
-    def bullet_point(self, x, y, text, title=None, text_w=110):
-        # Draw small teal bullet
-        self.set_fill_color(13, 148, 136)
-        self.rect(x, y + 1.5, 2, 2, "F")
+    def bullet_point(self, x, y, text, title=None, text_w=72):
+        # Draw small purple bullet
+        self.set_fill_color(79, 70, 229) # Indigo
+        self.rect(x, y + 1.5, 1.8, 1.8, "F")
         
         # Save margins
         old_l_margin = self.l_margin
         old_r_margin = self.r_margin
         
-        # Set margins for the bullet content area to enforce clean wrapping
-        self.set_left_margin(x + 5)
-        self.set_right_margin(297 - (x + 5 + text_w))
+        # Set margins for content area to prevent wrap overflows
+        self.set_left_margin(x + 4)
+        self.set_right_margin(297 - (x + 4 + text_w))
         
         current_y = y
         if title:
             self.set_text_color(15, 23, 42) # Slate-900
-            self.set_font("Helvetica", "B", 10)
-            self.set_xy(x + 5, current_y)
-            self.multi_cell(text_w, 4.5, title)
-            current_y = self.get_y() + 1
+            self.set_font("Helvetica", "B", 9)
+            self.set_xy(x + 4, current_y)
+            self.multi_cell(text_w, 4, title)
+            current_y = self.get_y() + 0.8
             
         self.set_text_color(71, 85, 105) # Slate-600
-        self.set_font("Helvetica", "", 9.5)
-        self.set_xy(x + 5, current_y)
-        self.multi_cell(text_w, 4.5, text)
+        self.set_font("Helvetica", "", 8.5)
+        self.set_xy(x + 4, current_y)
+        self.multi_cell(text_w, 4, text)
         
-        # Restore original margins
+        # Restore margins
         self.set_left_margin(old_l_margin)
         self.set_right_margin(old_r_margin)
 
@@ -92,298 +104,191 @@ def build_pdf(output_path):
     pdf = SlideDeck()
     
     # -------------------------------------------------------------
-    # SLIDE 1: Title Slide (Dark Theme)
+    # SLIDE 1: Title Slide (Dark Theme matching Slide 4)
     # -------------------------------------------------------------
     pdf.add_page()
     pdf.draw_dark_bg()
     
-    # Title Block
+    # Logo at the top
     pdf.set_text_color(255, 255, 255)
-    pdf.set_font("Helvetica", "B", 32)
-    pdf.set_xy(20, 65)
-    pdf.cell(0, 12, "Advanced Candidate Ranking Engine")
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.set_xy(15, 12)
+    pdf.cell(100, 6, "redrob  |  H2S")
+    
+    # Large centered hackathon banner
+    pdf.set_font("Helvetica", "BI", 48)
+    pdf.set_xy(20, 60)
+    pdf.cell(257, 18, "INDIA.RUNS", align="C")
+    
+    # Button-style text
+    pdf.set_fill_color(79, 70, 229) # Indigo
+    pdf.rect(78, 88, 140, 10, "F")
+    
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.set_xy(78, 90)
+    pdf.cell(140, 6, "Team Name & ID: team_2+", align="C")
     
     # Subtitle
-    pdf.set_text_color(13, 148, 136) # Teal-600
-    pdf.set_font("Helvetica", "B", 16)
-    pdf.set_xy(20, 80)
-    pdf.cell(0, 10, "A Production-Grade Hybrid Retrieval & Re-ranking Pipeline")
-    
-    # Metadata Line
-    pdf.set_text_color(148, 163, 184) # Slate-400
-    pdf.set_font("Helvetica", "", 11)
-    pdf.set_xy(20, 93)
-    pdf.cell(0, 6, "Designed for the 'Senior AI Engineer - Founding Team' Role | 100k Candidates Pool")
-    
-    # Divider line
-    pdf.set_draw_color(30, 41, 59) # Slate-800
-    pdf.line(20, 115, 277, 115)
-    
-    # Presenter details
     pdf.set_text_color(203, 213, 225) # Slate-300
-    pdf.set_font("Helvetica", "B", 11)
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.set_xy(20, 110)
+    pdf.cell(257, 10, "Offline Candidate Ranking Pipeline", align="C")
+    
+    # Footer info
+    pdf.set_text_color(148, 163, 184) # Slate-400
+    pdf.set_font("Helvetica", "", 10)
     pdf.set_xy(20, 125)
-    pdf.cell(100, 6, "SUBMITTED BY:")
-    pdf.set_font("Helvetica", "", 11)
-    pdf.set_xy(20, 131)
-    pdf.cell(100, 5, "Team Name: team_2+")
-    pdf.set_xy(20, 137)
-    pdf.cell(100, 5, "Primary Contact: Anmol Raj (anmolraj499@gmail.com)")
+    pdf.cell(257, 5, "Designed for the 'Senior AI Engineer - Founding Team' Role", align="C")
     
-    # Right panel details (Specs summary)
-    pdf.set_xy(180, 125)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.cell(100, 6, "SYSTEM COMPLIANCE:")
-    pdf.set_font("Helvetica", "", 11)
-    pdf.set_xy(180, 131)
-    pdf.cell(100, 5, "[X] 100% Offline (Zero API Calls at Runtime)")
-    pdf.set_xy(180, 137)
-    pdf.cell(100, 5, "[X] CPU-Only execution (<= 16GB RAM constraint)")
-    pdf.set_xy(180, 143)
-    pdf.cell(100, 5, "[X] Execution time: 193.75s (under 5-minute limit)")
-    
+    # Presenter Details
+    pdf.set_xy(20, 160)
+    pdf.cell(257, 5, "Submitted by: Anmol Raj  |  anmolraj499@gmail.com  |  +91-6204223789", align="C")
+
     # -------------------------------------------------------------
-    # SLIDE 2: Problem & Strategy (Light Theme)
+    # SLIDE 2: System Architecture (Light Theme matching Slide 1)
     # -------------------------------------------------------------
     pdf.add_page()
     pdf.draw_light_bg()
-    pdf.draw_slide_header("Executive Summary", "Solving the Limitations of Traditional ATS")
+    pdf.draw_slide_header("System Architecture")
     pdf.draw_slide_footer(2)
     
-    # Column 1: The ATS Problem
-    pdf.draw_card(15, 38, 128, 148, "THE CRITICAL FLAWS OF KEYWORD FILTERS")
+    # Three column layout: width 82, gap 10
+    # Column 1
+    pdf.draw_card(15, 45, 82, 140, "STAGE 1 & 2: DUAL RETRIEVAL")
+    pdf.bullet_point(18, 60, "Stream-reads the JSONL candidate dataset record-by-record, keeping memory footprint under 2GB RAM.", "1. Streaming Honeypot Filtering:", 74)
+    pdf.bullet_point(18, 92, "Evaluates total years of experience, skill durations, and job title coherence to filter out 35k trap candidates.", "2. Temporal Integrity Checks:", 74)
+    pdf.bullet_point(18, 124, "Uses custom BM25 index over JD keywords to rapidly funnel pool from 64k down to 2,000 in ~10 seconds.", "3. BM25 Sparse Search Funnel:", 74)
     
-    pdf.bullet_point(20, 50, "Candidates with weak skills stuff their resumes with target keywords, pushing low-quality profiles to the top.", "1. Vulnerability to Keyword Stuffing:", 113)
-    pdf.bullet_point(20, 80, "Fails to recognize conceptual synonyms. A candidate writing 'neural representation learning' is filtered out if the system only looks for 'embeddings'.", "2. Semantic Blindness:", 113)
-    pdf.bullet_point(20, 110, "Treats skills list in isolation, failing to evaluate career trajectories, tenure stability, and notice period constraints.", "3. Ignoring Career Context:", 113)
-    pdf.bullet_point(20, 140, "Standard databases are flooded with fake timelines, invalid experience declarations, and resume fraud (honeypot profiles).", "4. Honeypot Ingestion:", 113)
+    # Column 2
+    pdf.draw_card(107, 45, 82, 140, "STAGE 3: DENSE EMBEDDING")
+    pdf.bullet_point(110, 60, "Computes 384-dimensional dense vectors for top 2,000 summaries locally on CPU using SBERT all-MiniLM-L6-v2.", "1. Local Dense Encoding:", 74)
+    pdf.bullet_point(110, 92, "Generates cosine similarity matrix against expanded Job Description targets, avoiding simple keyword match constraints.", "2. Semantic Overlap Mapping:", 74)
+    pdf.bullet_point(110, 124, "Fuses Redrob signals (immediate availability bonus, relocation willing, activity) directly into the score math.", "3. Platform Signal Modulation:", 74)
     
-    # Column 2: Our Recruiter-First Philosophy
-    pdf.draw_card(154, 38, 128, 148, "THE TEAM_2+ PHILOSOPHY")
-    
-    pdf.bullet_point(159, 50, "Combine fast keyword index funnels with deep contextual sentence-transformers to capture implicit expertise.", "1. Hybrid Search Architecture:", 113)
-    pdf.bullet_point(159, 80, "Verify candidate consistency by cross-referencing graduation years, skill durations, and job title coherence before scoring.", "2. Hard Data Integrity Gates:", 113)
-    pdf.bullet_point(159, 110, "Fuses Redrob signals (notice periods, recruiter responsiveness, and geographic flexibility) directly into the mathematical rank.", "3. Behavioral Signal Fusion:", 113)
-    pdf.bullet_point(159, 140, "Generate honest, non-hallucinated explanations summarizing why a candidate is ranked, directly highlighting experience metrics.", "4. Factual Explainability:", 113)
+    # Column 3
+    pdf.draw_card(199, 45, 82, 140, "STAGE 4: DEEP RE-RANKING")
+    pdf.bullet_point(202, 60, "Loads ms-marco-MiniLM-L-6-v2 locally on CPU to jointly evaluate JD-profile context on the top 200 candidates.", "1. Cross-Encoder Joint Attention:", 74)
+    pdf.bullet_point(202, 92, "Generates a sigmoid-scaled relevance rating capturing deep contextual alignments that bi-encoders miss.", "2. Joint Relevance Calibration:", 74)
+    pdf.bullet_point(202, 124, "Programmatically compiles non-templated rationales detailing years of experience, skills, and notice period constraints.", "3. Factual Reasonings Output:", 74)
 
     # -------------------------------------------------------------
-    # SLIDE 3: System Architecture (Light Theme)
+    # SLIDE 3: Technologies Used (Light Theme matching Slide 3)
     # -------------------------------------------------------------
     pdf.add_page()
     pdf.draw_light_bg()
-    pdf.draw_slide_header("System Architecture", "The Decoupled Multi-Stage Funnel Design")
+    pdf.draw_slide_header("Technologies Used")
     pdf.draw_slide_footer(3)
     
-    # Architecture Card
-    pdf.draw_card(15, 38, 267, 148, "PIPELINE WORKFLOW & COMPUTATION STAGES")
+    # Three column cards:
+    # Column 1: Core DL
+    pdf.draw_card(15, 45, 82, 140, "DEEP LEARNING & NLP WORKloads")
+    pdf.bullet_point(18, 60, "Provides the core tensor computation framework, optimized for local CPU execution.", "PyTorch & Transformers:", 74)
+    pdf.bullet_point(18, 92, "Computes fast dense text embedding vectors for candidates summary profiles.", "SentenceTransformers (all-MiniLM-L6-v2):", 74)
+    pdf.bullet_point(18, 124, "Computes joint attention maps across candidates and JD requirements for fine-grained re-ranking.", "CrossEncoder (ms-marco-MiniLM-L-6-v2):", 74)
     
-    stages = [
-        {"num": "1", "name": "Stream Ingestion", "desc": "Ingests 100k records line-by-line to prevent memory leaks. Screens timeline/skills fraud."},
-        {"num": "2", "name": "BM25 Lexical Funnel", "desc": "Computes fast keyword score over target stack (PyTorch, RAG). Narrows pool to top 2,000."},
-        {"num": "3", "name": "Dense Embedding", "desc": "Computes cosine similarity with local SBERT model (all-MiniLM-L6-v2) on CPU."},
-        {"num": "4", "name": "Signal Fusion", "desc": "Applies multipliers for notice period agility, relocation, and recruiter activity."},
-        {"num": "5", "name": "Cross-Encoder", "desc": "Computes deep joint context overlap for top 200 using local ms-marco-MiniLM-L-6-v2."},
-        {"num": "6", "name": "Shortlist Export", "desc": "Applies deterministic tie-breakers and outputs format-compliant CSV."}
-    ]
+    # Column 2: Dashboard & Utils
+    pdf.draw_card(107, 45, 82, 140, "DASHBOARD & INTERACTION ENGINE")
+    pdf.bullet_point(110, 60, "Powers our interactive, sandboxed web dashboard. Allows real-time JD changes and live shortlist monitoring.", "Gradio Web App:", 74)
+    pdf.bullet_point(110, 92, "Manages index arrays, matrix similarity multiplications, and candidate data structures.", "Pandas & NumPy:", 74)
+    pdf.bullet_point(110, 124, "Compiles the final validated candidate shortlist into spreadsheet format.", "OpenPyXL (XLSX Generator):", 74)
     
-    y_start = 55
-    for i, s in enumerate(stages):
-        # Draw step number block
-        pdf.set_fill_color(15, 23, 42) # Dark Slate
-        pdf.rect(20, y_start, 8, 8, "F")
-        pdf.set_text_color(255, 255, 255)
-        pdf.set_font("Helvetica", "B", 10)
-        pdf.set_xy(20, y_start + 1.5)
-        pdf.cell(8, 5, s["num"], align="C")
-        
-        # Stage title
-        pdf.set_text_color(13, 148, 136) # Teal
-        pdf.set_font("Helvetica", "B", 11)
-        pdf.set_xy(32, y_start + 1.5)
-        pdf.cell(100, 5, s["name"])
-        
-        # Stage description with left margin constraint
-        old_l = pdf.l_margin
-        pdf.set_left_margin(90)
-        pdf.set_text_color(71, 85, 105) # Slate
-        pdf.set_font("Helvetica", "", 10)
-        pdf.set_xy(90, y_start + 1.5)
-        pdf.multi_cell(180, 5, s["desc"])
-        pdf.set_left_margin(old_l)
-        
-        # Divider line between steps
-        if i < 5:
-            pdf.set_draw_color(241, 245, 249)
-            pdf.line(20, y_start + 12, 272, y_start + 12)
-            
-        y_start += 18
+    # Column 3: Local Optimization
+    pdf.draw_card(199, 45, 82, 140, "LOCAL ARCHITECTURE CHOICES")
+    pdf.bullet_point(202, 60, "Pre-downloaded model weights cached directly in ./models/ for 100% network isolation during ranking runs.", "Zero-Network local Cache:", 74)
+    pdf.bullet_point(202, 92, "O(N) streaming JSONL parser ensures memory consumption stays under 2GB, preventing out-of-memory errors.", "Low-Memory Streaming Parser:", 74)
+    pdf.bullet_point(202, 124, "Cross-platform path resolution supports Windows, Linux, and macOS out-of-the-box.", "Portable OS Routing:", 74)
 
     # -------------------------------------------------------------
-    # SLIDE 4: Timeline Fraud & Honeypots (Light Theme)
+    # SLIDE 4: Results & Performance (Light Theme matching Slide 2)
     # -------------------------------------------------------------
     pdf.add_page()
     pdf.draw_light_bg()
-    pdf.draw_slide_header("Data Quality Guardrails", "Identifying Timeline Fraud and Honeypots")
+    pdf.draw_slide_header("Results & Performance")
     pdf.draw_slide_footer(4)
     
-    # Left Box: Filtering Rules
-    pdf.draw_card(15, 38, 140, 148, "HONEYPOT DETECTION ALGORITHMS")
+    # Column 1: Performance
+    pdf.draw_card(15, 45, 82, 140, "COMPUTE BENCHMARKS")
+    pdf.bullet_point(18, 60, "Completes full filtering, BM25 indexing, dense vector similarity, and Cross-Encoder re-ranking in 193.75s.", "Execution Speed: 193.75 seconds", 74)
+    pdf.bullet_point(18, 92, "Filters 100k candidates line-by-line using under 2GB peak RAM, ensuring compatibility with standard 16GB CPU laptops.", "Memory Footprint: <2GB Peak RAM", 74)
+    pdf.bullet_point(18, 124, "Runs entirely offline with zero API calls, guaranteeing candidate data confidentiality.", "Network Independence: 100% Offline", 74)
     
-    pdf.bullet_point(20, 50, "Excludes profiles claiming total years of experience exceeding the span since graduation by more than 2 years: \nExp > (2026 - First Graduation Year) + 2", "Rule 1: Graduation/Experience Mismatch", 125)
-    pdf.bullet_point(20, 80, "Excludes candidates claiming 'expert' or 'advanced' proficiency in 4 or more distinct skills but declaring exactly 0 months of duration.", "Rule 2: Skill Duration Inflation", 125)
-    pdf.bullet_point(20, 110, "Cross-references job start and end dates with declared job durations, checking for temporal mismatches (>12 months discrepancy).", "Rule 3: Career Timeline Coherence", 125)
-    pdf.bullet_point(20, 140, "Detects copy-paste profile descriptions (e.g. 'marketing manager' summaries paired with unrelated developer or mechanical engineering titles).", "Rule 4: Semantic Drift Integrity Gate", 125)
+    # Column 2: Ranking Quality
+    pdf.draw_card(107, 45, 82, 140, "RANKING & SCREENING QUALITY")
+    pdf.bullet_point(110, 60, "Screened out 35,208 candidates with fraudulent skills or anomalous timelines, ensuring 0% honeypots in Top 100.", "Honeypot Screen Rate: 35,208 profiles", 74)
+    pdf.bullet_point(110, 92, "Ensures scores strictly decrease as rank increases, with deterministic candidate_id sorting breaking duplicates.", "Monotonic Order compliance:", 74)
+    pdf.bullet_point(110, 124, "Checked and passed by validate_submission.py for strict schema, column ordering, and tie-breaker conformity.", "Validation Suite: 100% Pass", 74)
     
-    # Right Box: Results
-    pdf.draw_card(164, 38, 118, 148, "FILTERING IMPACT")
-    
-    pdf.set_text_color(13, 148, 136) # Teal
-    pdf.set_font("Helvetica", "B", 42)
-    pdf.set_xy(169, 52)
-    pdf.cell(108, 12, "35,208", align="C")
-    
-    pdf.set_text_color(15, 23, 42)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.set_xy(169, 66)
-    pdf.cell(108, 5, "Honeypot Candidates Screened Out", align="C")
-    
-    # Multi-cell with left margin constraint
-    old_l = pdf.l_margin
-    pdf.set_left_margin(172)
-    pdf.set_text_color(71, 85, 105)
-    pdf.set_font("Helvetica", "", 9.5)
-    pdf.set_xy(172, 75)
-    pdf.multi_cell(102, 4.2, "From the original 100,000 profile pool, 35,208 candidates were flagged as having inconsistent timeline claims or fraudulent skills sheets.")
-    
-    # Large Stat 2: Honeypot presence in Top 100
-    pdf.set_text_color(15, 23, 42)
-    pdf.set_font("Helvetica", "B", 42)
-    pdf.set_xy(169, 112)
-    pdf.cell(108, 12, "0%", align="C")
-    
-    pdf.set_text_color(13, 148, 136)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.set_xy(169, 126)
-    pdf.cell(108, 5, "Honeypots in Final Shortlist", align="C")
-    
-    pdf.set_xy(172, 135)
-    pdf.multi_cell(102, 4.2, "Our strict programmatic logic guarantees that none of these anomalous profiles make it into the final recommended Top 100 shortlist.")
-    pdf.set_left_margin(old_l)
+    # Column 3: Sandbox Verification
+    pdf.draw_card(199, 45, 82, 140, "INTERACTIVE WEB APP RUN")
+    pdf.bullet_point(202, 60, "Allows real-time customization of Job Description and instantly compiles score meters (tech match, behavior).", "JD Modulator & UI Shortlist:", 74)
+    pdf.bullet_point(202, 92, "Runs locally on port 7860, with web requests returning HTTP 200.", "Gradio Sandbox Server:", 74)
+    pdf.bullet_point(202, 124, "Verified by urllib to successfully load and serve profile inspect tabs.", "Sandbox Port Verification:", 74)
 
     # -------------------------------------------------------------
-    # SLIDE 5: Retrieval & Dense Embeddings (Light Theme)
+    # SLIDE 5: Submission Assets (Light Theme matching Slide 5)
     # -------------------------------------------------------------
     pdf.add_page()
     pdf.draw_light_bg()
-    pdf.draw_slide_header("The Two-Stage Retrieval Model", "Scaling Semantic Comprehension on CPU")
+    pdf.draw_slide_header("Submission Assets")
     pdf.draw_slide_footer(5)
     
-    # Left Box: Stage 1 Lexical
-    pdf.draw_card(15, 38, 128, 148, "STAGE 1: BM25 LEXICAL RETRIEVAL")
+    # Column 1: GitHub Code
+    pdf.draw_card(15, 45, 82, 140, "GITHUB REPOSITORY")
+    pdf.bullet_point(18, 60, "Contains fully working, clean, and complete code with local model caches and Gradio app.", "Clean Repository:", 74)
+    pdf.bullet_point(18, 92, "https://github.com/anmolraj499-ai/Candidate-Ranking", "Repository Link:", 74)
+    pdf.bullet_point(18, 124, "Detailed instructions on setup, environment, and pipeline execution.", "README Documentation:", 74)
     
-    pdf.bullet_point(20, 50, "Computes a document index over normalized terms in candidate summaries, titles, and career descriptions.", "Mechanism:", 113)
-    pdf.bullet_point(20, 80, "Curated keyword list containing 'pytorch', 'vector database', 'faiss', 'qdrant', 'RAG', 'transformers', and 'mlops'.", "Query Vector:", 113)
-    pdf.bullet_point(20, 110, "Filters candidate pool from 64,792 active profiles down to the top 2,000 in just 10.01 seconds.", "Speed & Scale:", 113)
-    pdf.bullet_point(20, 140, "Acts as a broad recall filter to ensure high-coverage of primary technical stack requirements.", "Role:", 113)
-
-    # Right Box: Stage 2 Dense
-    pdf.draw_card(154, 38, 128, 148, "STAGE 2: LOCAL SBERT EMBEDDINGS")
+    # Column 2: Colab Sandbox
+    pdf.draw_card(107, 45, 82, 140, "REPRODUCIBILITY SANDBOX")
+    pdf.bullet_point(110, 60, "Allows judges to run candidate evaluation sandbox on Google Colab's standard compute in seconds.", "Colab Notebook:", 74)
+    pdf.bullet_point(110, 92, "https://colab.research.google.com/github/anmolraj499-ai/Candidate-Ranking/blob/main/sandbox_ranking.ipynb", "Sandbox Link:", 74)
+    pdf.bullet_point(110, 124, "Clones the repo, installs dependencies, and runs ranker on sample_candidates.json.", "Automation Workflow:", 74)
     
-    pdf.bullet_point(159, 50, "Uses local 'all-MiniLM-L6-v2' model to map candidate profiles into a 384-dimensional vector space.", "Model selection:", 113)
-    pdf.bullet_point(159, 80, "Loads model files locally from checkpoints inside the project. Requires zero network/API requests.", "Zero-Network Constraint:", 113)
-    pdf.bullet_point(159, 110, "Computes exact cosine similarity on CPU across the top 2,000 candidates in 15 seconds.", "Computation:", 113)
-    pdf.bullet_point(159, 140, "Identifies matching candidates based on semantic meaning rather than exact word matches, preventing keyword stuffing.", "Impact:", 113)
-
-    # -------------------------------------------------------------
-    # SLIDE 6: Behavioral Modulation & Reranking (Light Theme)
-    # -------------------------------------------------------------
-    pdf.add_page()
-    pdf.draw_light_bg()
-    pdf.draw_slide_header("Final Optimization & Re-ranking", "Fusing Platform Signals with Joint Attention")
-    pdf.draw_slide_footer(6)
-    
-    # Left Box: Platform Signal Modulation
-    pdf.draw_card(15, 38, 128, 148, "STAGE 3: BEHAVIORAL SIGNAL MODULATION")
-    
-    pdf.bullet_point(20, 50, "Underqualified candidates receive steep penalty curves; overqualified profiles decay slowly to prevent screening out.", "1. Seniority Fit Curve:", 113)
-    pdf.bullet_point(20, 80, "Bonus (+5%) for sub-15 days notice, penalty (-15%) for 90-day locks to account for drop-off hazard.", "2. Notice Period Agility:", 113)
-    pdf.bullet_point(20, 110, "1.0 for target Indian hubs (Noida, Pune, NCR). 0.95 for relocation-willing. Penalty for non-willing remote candidates.", "3. Location Fit Multipliers:", 113)
-    pdf.bullet_point(20, 140, "Integrates recruiter response rates and profile completeness directly into the scoring loop.", "4. Platform Completeness:", 113)
-
-    # Right Box: Cross-Encoder Reranking
-    pdf.draw_card(154, 38, 128, 148, "STAGE 4: LOCAL CROSS-ENCODER RERANK")
-    
-    pdf.bullet_point(159, 50, "Uses 'ms-marco-MiniLM-L-6-v2' locally on the top 200 candidates to refine the final shortlist.", "Dual-Encoder Correction:", 113)
-    pdf.bullet_point(159, 80, "Computes joint cross-attention across candidate summaries and JD requirements simultaneously, extracting complex matching patterns.", "Mechanism:", 113)
-    pdf.bullet_point(159, 110, "Uses alphabetical candidate ID sort as a tie-breaker when final scores are identical, ensuring stable and deterministic ranks.", "Deterministic Tie-Breaking:", 113)
-    pdf.bullet_point(159, 140, "Explains the specific title, years of experience, top matching tools, and notice period constraints without hallucinated claims.", "Factual Rationale Generator:", 113)
+    # Column 3: Shortlist Deliverables
+    pdf.draw_card(199, 45, 82, 140, "SHORTLIST OUTPUTS")
+    pdf.bullet_point(202, 60, "Format-compliant candidate rankings containing candidate_id, rank, score, and reasoning.", "Validated Shortlist CSV:", 74)
+    pdf.bullet_point(202, 92, "Excel XLSX version created for easy upload through the portal's restricted format picker.", "Excel Shortlist XLSX:", 74)
+    pdf.bullet_point(202, 124, "Official metadata detailing compute environment, team contact details, and algorithms used.", "Submission Metadata YAML:", 74)
 
     # -------------------------------------------------------------
-    # SLIDE 7: Summary & Verification (Dark Theme)
+    # SLIDE 6: Thank You / Title Slide (Dark Theme matching Slide 4)
     # -------------------------------------------------------------
     pdf.add_page()
     pdf.draw_dark_bg()
     
-    # Final header
+    # Logo at the top
     pdf.set_text_color(255, 255, 255)
-    pdf.set_font("Helvetica", "B", 24)
-    pdf.set_xy(20, 20)
-    pdf.cell(0, 10, "Project Delivery & Verification Summary")
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.set_xy(15, 12)
+    pdf.cell(100, 6, "redrob  |  H2S")
     
-    pdf.set_draw_color(30, 41, 59)
-    pdf.line(20, 32, 277, 32)
+    # Center INDIA.RUNS
+    pdf.set_font("Helvetica", "BI", 48)
+    pdf.set_xy(20, 60)
+    pdf.cell(257, 18, "INDIA.RUNS", align="C")
     
-    # Left section: Core Metrics
-    pdf.set_text_color(13, 148, 136) # Teal
+    # Button-style text
+    pdf.set_fill_color(79, 70, 229) # Indigo
+    pdf.rect(88, 88, 120, 10, "F")
+    
+    pdf.set_text_color(255, 255, 255)
     pdf.set_font("Helvetica", "B", 12)
-    pdf.set_xy(20, 42)
-    pdf.cell(100, 6, "SUBMISSION BENCHMARKS")
+    pdf.set_xy(88, 90)
+    pdf.cell(120, 6, "Build what next India runs on", align="C")
     
-    old_l = pdf.l_margin
-    pdf.set_left_margin(20)
-    pdf.set_text_color(241, 245, 249) # Light text
-    pdf.set_font("Helvetica", "", 10)
-    pdf.set_xy(20, 52)
-    pdf.multi_cell(125, 5.5, 
-        "- Execution Time: 193.75 seconds to screen, rank, and format 100,000 candidates on a single core.\n\n"
-        "- Memory Footprint: Peak RAM is well under 16GB due to line-by-line streaming of candidates.\n\n"
-        "- Formatting Verification: Passed all validate_submission.py checks, guaranteeing monotonic non-increasing scores, strict ranks (1-100), and alphabetical tie-breaking.\n\n"
-        "- Zero API Dependency: Operates completely offline, protecting candidate privacy and securing sandbox replicability."
-    )
-    pdf.set_left_margin(old_l)
+    # Thank You text
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font("Helvetica", "B", 28)
+    pdf.set_xy(20, 115)
+    pdf.cell(257, 12, "THANK YOU", align="C")
     
-    # Right section: Deliverables checklist
-    pdf.set_xy(160, 42)
-    pdf.set_font("Helvetica", "B", 12)
-    pdf.cell(100, 6, "DELIVERABLES CHECKLIST")
+    # Footer
+    pdf.set_text_color(148, 163, 184) # Slate-400
+    pdf.set_font("Helvetica", "", 11)
+    pdf.set_xy(20, 135)
+    pdf.cell(257, 6, "Team: team_2+", align="C")
     
-    checklist = [
-        "[X] GitHub Repository (clean history, fully documented README)",
-        "[X] final shortlist CSV (team_2+.csv, validated format)",
-        "[X] Submission Metadata (submission_metadata.yaml)",
-        "[X] Google Colab Reproducibility Sandbox Notebook",
-        "[X] Slide Deck PDF (Methodology_team_2+.pdf)"
-    ]
-    
-    y_check = 52
-    for item in checklist:
-        pdf.set_text_color(13, 148, 136) # Teal check
-        pdf.set_xy(160, y_check)
-        pdf.cell(10, 5, "[X]")
-        pdf.set_text_color(241, 245, 249)
-        pdf.set_xy(170, y_check)
-        pdf.cell(100, 5, item[4:])
-        y_check += 12
-        
-    pdf.set_draw_color(30, 41, 59)
-    pdf.line(20, 155, 277, 155)
-    
-    pdf.set_text_color(148, 163, 184)
-    pdf.set_font("Helvetica", "I", 11)
-    pdf.set_xy(20, 165)
-    pdf.cell(0, 10, "Thank you! The pipeline is ready for submission to the Redrob Portal.", align="C")
-    
-    # Output file
     pdf.output(output_path)
 
 if __name__ == "__main__":

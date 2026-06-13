@@ -275,14 +275,34 @@ def main():
     honeypot_count = 0
     
     print("Reading and filtering candidate dataset...")
-    with open(args.candidates, "r", encoding="utf-8") as f:
-        for line in f:
-            cand = json.loads(line)
-            is_hp, reason = is_honeypot(cand)
-            if is_hp:
-                honeypot_count += 1
+    if args.candidates.endswith(".json"):
+        with open(args.candidates, "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
+            if isinstance(raw_data, list):
+                for cand in raw_data:
+                    is_hp, reason = is_honeypot(cand)
+                    if is_hp:
+                        honeypot_count += 1
+                    else:
+                        candidates.append(cand)
             else:
-                candidates.append(cand)
+                is_hp, reason = is_honeypot(raw_data)
+                if is_hp:
+                    honeypot_count += 1
+                else:
+                    candidates.append(raw_data)
+    else:
+        with open(args.candidates, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                cand = json.loads(line)
+                is_hp, reason = is_honeypot(cand)
+                if is_hp:
+                    honeypot_count += 1
+                else:
+                    candidates.append(cand)
                 
     print(f"Loaded {len(candidates)} active candidates. Screened out {honeypot_count} honeypots in {time.time() - start_time:.2f}s.")
     

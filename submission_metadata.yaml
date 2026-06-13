@@ -11,8 +11,8 @@ team_members:
     email: "anmolraj499@gmail.com"
     role: "ML Engineer"
 
-github_repo: "https://github.com/anmol/redrob-candidate-ranking"
-sandbox_link: "https://huggingface.co/spaces/anmol/redrob-ranker"
+github_repo: "https://github.com/anmolraj499-ai/Candidate-Ranking"
+sandbox_link: "https://colab.research.google.com/github/anmolraj499-ai/Candidate-Ranking/blob/main/sandbox_ranking.ipynb"
 reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./team_2+.csv"
 
 compute:

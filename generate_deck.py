@@ -9,6 +9,13 @@ class SlideDeck(FPDF):
         self.set_margin(0)
         self.set_auto_page_break(False)
 
+    def draw_dark_bg(self):
+        self.set_fill_color(15, 23, 42) # Slate-900 (#0F172A)
+        self.rect(0, 0, 297, 210, "F")
+        # Draw the bottom purple/indigo stripe (8mm height)
+        self.set_fill_color(139, 92, 246) # Violet-500 (#8B5CF6)
+        self.rect(0, 202, 297, 8, "F")
+
     def draw_gradient_bg(self):
         # Transition from a royal dark indigo-blue to a vibrant violet-purple
         # Dark Blue: (24, 18, 48) to Violet-Purple: (91, 33, 182)
@@ -107,10 +114,10 @@ def build_pdf(output_path):
     pdf = SlideDeck()
     
     # -------------------------------------------------------------
-    # SLIDE 1: Cover Slide (Dark Gradient Theme)
+    # SLIDE 1: Cover Slide (Dark Theme)
     # -------------------------------------------------------------
     pdf.add_page()
-    pdf.draw_gradient_bg()
+    pdf.draw_dark_bg()
     
     # Top Logo
     pdf.set_text_color(255, 255, 255)
@@ -340,10 +347,10 @@ def build_pdf(output_path):
     pdf.bullet_point(202, 124, "Official metadata detailing compute environment, team contact details, and algorithms used.", "Submission Metadata YAML:", 74)
 
     # -------------------------------------------------------------
-    # SLIDE 11: Thank You / Cover Slide (Dark Gradient Theme)
+    # SLIDE 11: Thank You / Cover Slide (Dark Theme)
     # -------------------------------------------------------------
     pdf.add_page()
-    pdf.draw_gradient_bg()
+    pdf.draw_dark_bg()
     
     # Logo
     pdf.set_text_color(255, 255, 255)

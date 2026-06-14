@@ -82,7 +82,7 @@ class SlideDeck(FPDF):
         self.set_text_color(148, 163, 184) # Slate-400
         self.set_font("Helvetica", "", 8)
         self.set_xy(15, 195)
-        self.cell(100, 5, "team_2+  |  Candidate Ranking Submission")
+        self.cell(100, 5, "2+  |  Candidate Ranking Submission")
         self.set_xy(182, 195)
         self.cell(100, 5, f"Slide {page_num} of 11", align="R")
 
@@ -162,7 +162,7 @@ def build_pdf(output_path):
     pdf.set_font("Helvetica", "B", 12)
     pdf.cell(pdf.get_string_width("Team Name : "), 6, "Team Name : ")
     pdf.set_font("Helvetica", "", 12)
-    pdf.cell(100, 6, "team_2+")
+    pdf.cell(100, 6, "2+")
     
     # Team Leader Name
     pdf.set_xy(20, 142)
@@ -200,7 +200,7 @@ def build_pdf(output_path):
     pdf.bullet_point(110, 130, "Combining deep semantic transformers with keyword indexes to get explainable shortlists.", "3. Hybrid Search:", 74)
     
     pdf.draw_card(199, 45, 82, 140, "SUBMISSION COMPLIANCE")
-    pdf.bullet_point(202, 60, "Official Team ID is team_2+, matching our registered team name for consistency across portals.", "1. Team ID Match:", 74)
+    pdf.bullet_point(202, 60, "Official Team ID is 2+, matching our registered team name for consistency across portals.", "1. Team ID Match:", 74)
     pdf.bullet_point(202, 95, "Metadata template fully populated and verified to match official hackathon requirements.", "2. Metadata Verified:", 74)
     pdf.bullet_point(202, 130, "All output rankings passed formatting validation. Excel and CSV variants checked.", "3. Output Conformity:", 74)
 
@@ -407,7 +407,7 @@ def build_pdf(output_path):
     pdf.set_text_color(148, 163, 184) # Slate-400
     pdf.set_font("Helvetica", "", 11)
     pdf.set_xy(20, 135)
-    pdf.cell(257, 6, "Team: team_2+", align="C")
+    pdf.cell(257, 6, "Team: 2+", align="C")
     pdf.draw_slide_footer(11)
     
     pdf.output(output_path)
